@@ -1,0 +1,75 @@
+###########
+<--START
+#TRACE ON
+
+	BANCS.OUTPUT.successOrFailure = "S"
+
+	sv_a = urhk_TBAF_SetValue("aafe0004.funcblk.header_title|" + "BALANCE CERTIFICATE")
+	sv_a = urhk_TBAF_SetValue("aafe0004.funcblk.header_subtitle|" + "Customized")
+	sv_a = urhk_TBAF_SetValue("aafe0004.datablk1.field_lit_1|A/c Opn Date(Y/N)")
+    sv_a = urhk_TBAF_SetValue("aafe0004.datablk1.field_lit_2|Account Number")
+    sv_a = urhk_TBAF_SetValue("aafe0004.datablk1.field_lit_3|As of Date")
+	sv_a = urhk_TBAF_SetValue("aafe0004.datablk1.field_lit_4|Currency")
+
+	sv_a = urhk_TBAF_SetValue("aafe0004.datablk1.pg0_field_2_type|ACCOUNT")
+	sv_a = urhk_TBAF_SetValue("aafe0004.datablk1.pg0_field_3_type|DATE") 
+	sv_a = urhk_TBAF_SetValue("aafe0004.datablk1.pg0_field_4_type|CURRENCY")
+
+	 # sv_q = "date1|"  
+	 # sv_q = sv_q + "select db_stat_date - 1 from gct"
+
+	 # sv_r = urhk_dbSelect(sv_q)
+
+         # print(sv_r)
+
+	# IF ( sv_r == 0 ) THEN
+
+        # BANCS.OUTPUT.date1 = BANCS.OUTPARAM.date1
+	# ELSE
+        # BANCS.OUTPUT.repacct = ""
+	# ENDIF
+
+	# sv_d = left$(BANCS.OUTPUT.date1,10)
+	
+	sv_a = urhk_TBAF_SetValue("aafe0004.datablk1.field_1|Y")
+	sv_a = urhk_TBAF_SetValue("aafe0004.datablk1.field_4|USD")
+
+	sv_a = urhk_GetNextWorkingDate(BANCS.STDIN.mySolId + "|" + left$(BANCS.STDIN.BODDate,10))
+	sv_a = left$(BANCS.OUTPARAM.PrevWorkingDate,10)
+	
+	sv_a = urhk_TBAF_SetValue("aafe0004.datablk1.field_3|" + sv_a )
+    sv_a = urhk_TBAF_SetValue("aafe0004.datablk1.pg0_field_3_type|DATE") 
+	sv_u = urhk_TBAF_SetKeyScript("aafe0004.datablk1.field_3.key-put-bod-date|rpt_d_57_dp01.scr")
+	print(sv_u)
+	
+	sv_a = urhk_TBAF_SetAttrib("aafe0004.datablk1.field_1|M")
+	sv_a = urhk_TBAF_SetAttrib("aafe0004.datablk1.field_2|M")	
+	sv_a = urhk_TBAF_SetAttrib("aafe0004.datablk1.field_3|M")
+	sv_a = urhk_TBAF_SetAttrib("aafe0004.datablk1.field_4|M")
+		
+	
+	sv_a = urhk_TBAF_SetAttrib("aafe0004.datablk1.field_5|P")
+	sv_a = urhk_TBAF_SetAttrib("aafe0004.datablk1.field_6|P")	
+	sv_a = urhk_TBAF_SetAttrib("aafe0004.datablk1.field_7|P")
+	sv_a = urhk_TBAF_SetAttrib("aafe0004.datablk1.field_8|P")	
+	sv_a = urhk_TBAF_SetAttrib("aafe0004.datablk1.field_9|P")
+	sv_a = urhk_TBAF_SetAttrib("aafe0004.datablk1.field_10|P")	
+	sv_a = urhk_TBAF_SetAttrib("aafe0004.datablk1.field_11|P")
+	sv_a = urhk_TBAF_SetAttrib("aafe0004.datablk1.field_12|P")	
+	sv_a = urhk_TBAF_SetAttrib("aafe0004.datablk1.field_5|H")
+	sv_a = urhk_TBAF_SetAttrib("aafe0004.datablk1.field_6|H")	
+	sv_a = urhk_TBAF_SetAttrib("aafe0004.datablk1.field_7|H")
+	sv_a = urhk_TBAF_SetAttrib("aafe0004.datablk1.field_8|H")	
+	sv_a = urhk_TBAF_SetAttrib("aafe0004.datablk1.field_9|H")
+	sv_a = urhk_TBAF_SetAttrib("aafe0004.datablk1.field_10|H")	
+	sv_a = urhk_TBAF_SetAttrib("aafe0004.datablk1.field_11|H")
+	sv_a = urhk_TBAF_SetAttrib("aafe0004.datablk1.field_12|H")	
+	
+	#sv_a = urhk_TBAF_SetValue("aafe0004.funcblk.exe_name|rpt_d_65.com")
+	sv_a = urhk_TBAF_SetKeyScript ("aafe0004.datablk1.key-f2|balcert_1.scr|1")
+	print(sv_a)
+	sv_a = urhk_B2K_ShowParamAcptFrm("aafe0004")	
+
+	exitscript
+end-->
+

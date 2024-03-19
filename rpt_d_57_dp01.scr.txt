@@ -1,0 +1,12 @@
+#######
+<--start
+trace on
+#sv_q = urhk_TBAF_ChangeFieldValue("datablk1.field_3|" + left$(BANCS.STDIN.BODDate,10))
+#print(sv_q)
+
+sv_q = urhk_TBAF_ChangeFieldValue("funcblk.field_2|" + left$(BANCS.STDIN.BODDate,10))
+print(sv_q)
+
+trace off
+end-->
+

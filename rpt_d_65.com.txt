@@ -1,0 +1,61 @@
+#***********************************************************************
+#. `execom commfunc.com`
+. $2
+reportFileName="rpt_d_65${$}.rpt"
+lstFileName="rpt_d_65.lst"
+ripFileName="rpt_d_65${$}.rip"
+mrtFileName="rpt_d_65.mrt"
+datFileName="rpt_d_65${$}.dat"
+
+echo setid=\"${field_1}\" > $datFileName
+echo asondate =\"${field_2}\" >> $datFileName 
+
+InputData=${field_1}\|${field_2}\|${field_3}\|${field_4}\|${field_5}\|${field_6}\|${field_7}\|${field_8}\|${field_9}\|${field_10}
+STARTTIME=$( perl -MTime::HiRes -e 'print int(1000 * Time::HiRes::gettimeofday),"\n"' )
+starthhmiss=`date +"%H:%M:%S"`
+SQLFileName=$(echo $lstFileName|cut -d"." -f1)".sql"
+
+input=`echo $field_1`
+input=`echo $field_2` 
+input=`echo $field_3`
+input=`echo $field_4`
+
+newrepos.com $ripFileName $datFileName
+
+exebatch bauu9151 $TBA_PROD_ROOT/cust/sql/rpt_d_65.sql "${field_1}"  "${field_2}" "${field_3}" "${field_4}"
+	if [ $? -ne 0 ]
+	then
+		echo "SQL procedure execution for rpt_d_65.sql failed !"
+		exit 1
+fi
+	exebatch mrbx4001  $mrtFileName  $lstFileName $reportFileName
+if [ $? -ne 0 ]
+then
+    echo "Report Generation Failed !"
+    exit 2
+else
+	Report_Trace.com $SQLFileName $mrtFileName $STARTTIME $starthhmiss $InputData
+	exebatch sendpc -a -d C:/Fin_Reports "$reportFileName" 
+	echo "   "
+	echo "   "
+	echo "   "
+	echo "   "
+	echo "Report generated and transferred to C:/Fin_Reports of your PC."
+	echo "   "
+	echo "   "
+	echo "   "
+	sleep 2	
+fi
+
+noOfPages=`grep -c "^L" "$reportFileName"`
+noOfPages=`expr "${noOfPages}" + 1`
+exebatch babx4040 "${B2K_SESSION_ID}" "$reportFileName" "BALANCE CERTIFICATE" "MANAGER" "${noOfPages}" Y
+
+if [ "x$TBA_DEBUG" = "x" ]
+then
+#    rm -f $lstFileName
+     rm -f $datFileName
+     rm -f $ripFileName
+fi
+
+exit 0

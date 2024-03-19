@@ -1,0 +1,35 @@
+#####
+<--START
+#TRACE ON
+sv_a = urhk_TBAF_ChangeFieldValue("funcblk.exe_name|")
+sv_a = urhk_TBAF_InquireFieldValue ("datablk1.field_1")
+sv_k = TRIM(B2KTEMP.TEMPSTD.TBAFRESULT)
+IF ((sv_k !="Y") AND (sv_k !="N") )THEN
+	sv_p = urhk_TBAF_DispMesg ("Invalid A/c Open Flag") 
+	BANCS.OUTPUT.successOrFailure = "F"
+	GOTO end
+ENDIF
+sv_a = urhk_TBAF_InquireFieldValue ("datablk1.field_3")
+B2KTEMP.TEMPSTD.ASONDATE = TRIM(B2KTEMP.TEMPSTD.TBAFRESULT)
+print(B2KTEMP.TEMPSTD.ASONDATE)
+sv_a = urhk_b2k_valdate(B2KTEMP.TEMPSTD.ASONDATE)
+IF(sv_a !=0) THEN
+	sv_p = urhk_TBAF_DispMesg ("Invalid As of Date") 
+	BANCS.OUTPUT.successOrFailure = "F"
+	GOTO end
+ENDIF
+sv_a = urhk_B2k_getDateDiffFromBODDate (B2KTEMP.TEMPSTD.ASONDATE)
+print(BANCS.OUTPARAM.DateDiff)
+IF(BANCS.OUTPARAM.DateDiff>=0) THEN
+	sv_p = urhk_TBAF_DispMesg ("To Date must be less than BOD date") 
+	BANCS.OUTPUT.successOrFailure = "F"
+	GOTO end
+ENDIF
+#IF REACHED HERE, EVERYTHING IS OK
+sv_a = urhk_TBAF_ChangeFieldValue("funcblk.exe_name|rpt_d_65.com")
+sv_a = urhk_tbaf_replayKey("key-f2")
+
+End:
+#TRACE OFF
+exitscript
+end-->

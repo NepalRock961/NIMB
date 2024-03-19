@@ -1,0 +1,280 @@
+<--start
+TRACE ON
+sv_b = CINT(INTBAF.INTBAFC.TbafEventStep)
+print(sv_b)
+IF ((sv_b == 0) or (sv_b == 99)) THEN
+	sv_a = urhk_TBAF_InquireFieldValue ("datablk.field_1")
+	STDWFS.GLBDATA.NEW_SOL_ID = TRIM(B2KTEMP.TEMPSTD.TBAFRESULT)
+	IF (STDWFS.GLBDATA.NEW_SOL_ID=="") THEN
+		sv_p = urhk_TBAF_DispMesg (" New SOLID must be entered !!") 
+		BANCS.OUTPUT.successOrFailure = "F"
+		GOTO end
+	ENDIF
+	# sv_a = urhk_B2k_valBankBranchCode ("004|"+STDWFS.GLBDATA.NEW_SOL_ID)
+	# IF (sv_a == 0) THEN
+		# sv_p = urhk_TBAF_DispMesg (STDWFS.GLBDATA.NEW_SOL_ID + " SOLID Already Exists !!") 
+		# BANCS.OUTPUT.successOrFailure = "F"
+		# GOTO end
+	# ENDIF
+	
+	sv_a = urhk_TBAF_InquireFieldValue ("datablk.field_2")
+	STDWFS.GLBDATA.COPYFROM_SOL_ID  = TRIM(B2KTEMP.TEMPSTD.TBAFRESULT)
+	sv_a = urhk_B2k_valBankBranchCode ("004|"+STDWFS.GLBDATA.COPYFROM_SOL_ID)
+	IF (sv_a != 0) THEN
+		sv_p = urhk_TBAF_DispMesg (STDWFS.GLBDATA.COPYFROM_SOL_ID + " Copy SOLID is invalid !!") 
+		BANCS.OUTPUT.successOrFailure = "F"
+		GOTO end
+	ENDIF
+	
+	sv_a = urhk_TBAF_InquireFieldValue ("datablk.field_3")
+	STDWFS.GLBDATA.BRANCH_NAME = TRIM(B2KTEMP.TEMPSTD.TBAFRESULT)
+	
+	IF (STDWFS.GLBDATA.BRANCH_NAME=="") THEN
+		sv_p = urhk_TBAF_DispMesg (" Branch Name must be entered !!") 
+		BANCS.OUTPUT.successOrFailure = "F"
+		GOTO end
+	ENDIF
+	
+	sv_a = urhk_TBAF_InquireFieldValue ("datablk.field_4")
+	STDWFS.GLBDATA.SHORT_NAME = TRIM(B2KTEMP.TEMPSTD.TBAFRESULT)
+	IF (STDWFS.GLBDATA.SHORT_NAME=="") THEN
+		sv_p = urhk_TBAF_DispMesg (" Short Name must be entered !!") 
+		BANCS.OUTPUT.successOrFailure = "F"
+		GOTO end
+	ENDIF
+	IF (strlen(STDWFS.GLBDATA.SHORT_NAME) != 3) THEN
+		sv_p = urhk_TBAF_DispMesg (" Short Name must be 3 chars !!") 
+		BANCS.OUTPUT.successOrFailure = "F"
+		GOTO end
+	ENDIF
+	
+	sv_a = urhk_TBAF_InquireFieldValue ("datablk.field_5")
+	STDWFS.GLBDATA.BRANCH_ABBR = TRIM(B2KTEMP.TEMPSTD.TBAFRESULT)
+	IF (STDWFS.GLBDATA.BRANCH_ABBR=="") THEN
+		sv_p = urhk_TBAF_DispMesg (" Branch Abbr must be entered !!") 
+		BANCS.OUTPUT.successOrFailure = "F"
+		GOTO end
+	ENDIF
+	IF (strlen(STDWFS.GLBDATA.BRANCH_ABBR) != 2) THEN
+		sv_p = urhk_TBAF_DispMesg (" Branch Abbr must be 2 chars !!") 
+		BANCS.OUTPUT.successOrFailure = "F"
+		GOTO end
+	ENDIF
+	
+	sv_a = urhk_TBAF_InquireFieldValue ("datablk.field_6")
+	STDWFS.GLBDATA.ADDRESS = TRIM(B2KTEMP.TEMPSTD.TBAFRESULT)
+	IF (STDWFS.GLBDATA.ADDRESS=="") THEN
+		sv_p = urhk_TBAF_DispMesg (" Address must be entered !!") 
+		BANCS.OUTPUT.successOrFailure = "F"
+		GOTO end
+	ENDIF
+	
+	sv_a = urhk_TBAF_InquireFieldValue ("datablk.field_7")
+	STDWFS.GLBDATA.DISTRICT = TRIM(B2KTEMP.TEMPSTD.TBAFRESULT)
+	IF (STDWFS.GLBDATA.DISTRICT=="") THEN
+		sv_p = urhk_TBAF_DispMesg (" DISTRICT must be entered !!") 
+		BANCS.OUTPUT.successOrFailure = "F"
+		GOTO end
+	ENDIF
+	sv_a = urhk_b2k_valRefCode("01|" + STDWFS.GLBDATA.DISTRICT)
+	IF (sv_a != 0) THEN
+		sv_p = urhk_TBAF_DispMesg (STDWFS.GLBDATA.DISTRICT + " DISTRICT is invalid !!") 
+		BANCS.OUTPUT.successOrFailure = "F"
+		GOTO end
+	ENDIF
+	
+	sv_a = urhk_TBAF_InquireFieldValue ("datablk.field_8")
+	STDWFS.GLBDATA.ZONE = TRIM(B2KTEMP.TEMPSTD.TBAFRESULT)
+	IF (STDWFS.GLBDATA.ZONE=="") THEN
+		sv_p = urhk_TBAF_DispMesg (" ZONE must be entered !!") 
+		BANCS.OUTPUT.successOrFailure = "F"
+		GOTO end
+	ENDIF
+	sv_a = urhk_b2k_valRefCode("02|" + STDWFS.GLBDATA.ZONE)
+	IF (sv_a != 0) THEN
+		sv_p = urhk_TBAF_DispMesg (STDWFS.GLBDATA.ZONE+ " ZONE is invalid !!") 
+		BANCS.OUTPUT.successOrFailure = "F"
+		GOTO end
+	ENDIF
+	
+	sv_a = urhk_TBAF_InquireFieldValue ("datablk.field_9")
+	STDWFS.GLBDATA.REGION_NAME = TRIM(B2KTEMP.TEMPSTD.TBAFRESULT)
+	IF ((STDWFS.GLBDATA.REGION_NAME != "INVAL") AND (STDWFS.GLBDATA.REGION_NAME !="OUTVAL")) THEN
+		sv_p = urhk_TBAF_DispMesg ("Valid Region are INVAL and OUTVAL !!") 
+		BANCS.OUTPUT.successOrFailure = "F"
+		GOTO end
+	ENDIF
+	
+	
+	sv_a = urhk_TBAF_InquireFieldValue ("datablk.field_10")
+	STDWFS.GLBDATA.PROVINCE_NAME = TRIM(B2KTEMP.TEMPSTD.TBAFRESULT)
+	IF (STDWFS.GLBDATA.PROVINCE_NAME=="") THEN
+		sv_p = urhk_TBAF_DispMesg ("Province must be entered  Press F2 for List !!") 
+		BANCS.OUTPUT.successOrFailure = "F"
+		GOTO end
+	ENDIF
+	sv_s = "CNT|SELECT COUNT(*) CNT FROM STID WHERE SET_ID LIKE 'PROV%' AND SET_ID ='" + STDWFS.GLBDATA.PROVINCE_NAME + "' "
+	sv_a = urhk_dbSelect(sv_s)
+	IF (BANCS.OUTPARAM.CNT == 0) THEN
+		sv_p = urhk_TBAF_DispMesg ("Invalid Province Code Press F2 for List!!")
+		BANCS.OUTPUT.successOrFailure = "F"
+		GOTO end
+	ENDIF
+	sv_a = urhk_TBAF_InquireFieldValue ("datablk.field_11")
+        STDWFS.GLBDATA.NRB_CODE = TRIM(B2KTEMP.TEMPSTD.TBAFRESULT)
+        IF (STDWFS.GLBDATA.NRB_CODE=="") THEN
+                sv_p = urhk_TBAF_DispMesg ("NRB Code must be entered !!")
+                BANCS.OUTPUT.successOrFailure = "F"
+                GOTO end
+        ENDIF
+	
+	
+	
+	#f4 press
+	IF(sv_b == 0) THEN
+		sv_p = urhk_TBAF_DispMesg ("Press F10 to Create SOL") 
+		STDWFS.GLBDATA.ValDone = "Y"
+		BANCS.OUTPUT.successOrFailure = "F"
+		GOTO end
+	ENDIF
+	# THIS IS FOR F10 PRESS
+	IF(STDWFS.GLBDATA.ValDone != "Y") THEN
+		sv_p = urhk_TBAF_DispMesg ("Press F4 to validate and press F10") 
+		BANCS.OUTPUT.successOrFailure = "F"
+		GOTO end
+	ENDIF
+	STDWFS.GLBDATA.continue = "Y"
+	BANCS.OUTPUT.successOrFailure = "S"
+	sv_a = urhk_TBAF_ReplayKey("key-f1")
+	GOTO end
+ENDIF
+IF (sv_b == 1) THEN
+	sv_a = urhk_TBAF_ChangeFieldValue("funcblk.func_code|A")
+	sv_a = urhk_TBAF_ChangeFieldValue("funcblk.frn_br_flg|I")
+	sv_a = urhk_TBAF_ChangeFieldValue("funcblk.bank_code|004")
+	sv_a = urhk_TBAF_ChangeFieldValue("funcblk.br_code|" + STDWFS.GLBDATA.NEW_SOL_ID)
+	GOTO End
+ENDIF
+IF (sv_b == 2) THEN
+	sv_a = urhk_TBAF_ChangeFieldValue("datablk1.br_name|" + STDWFS.GLBDATA.BRANCH_NAME)
+	sv_a = urhk_TBAF_ChangeFieldValue("datablk1.fc_transactions_alwd_on_br|Y")
+	sv_a = urhk_TBAF_ChangeFieldValue("datablk1.br_wkly_off|7")
+	sv_a = urhk_TBAF_ChangeFieldValue("datablk1.br_short_name|" + STDWFS.GLBDATA.SHORT_NAME)
+	sv_a = urhk_TBAF_ChangeFieldValue("datablk1.trade_finance_branch|Y")
+	sv_a = urhk_TBAF_ChangeFieldValue("datablk1.br_addr_1|" + STDWFS.GLBDATA.ADDRESS)
+	sv_a = urhk_TBAF_ChangeFieldValue("datablk1.br_city_code|" + STDWFS.GLBDATA.DISTRICT)
+	sv_a = urhk_TBAF_ChangeFieldValue("datablk1.br_state_code|" + STDWFS.GLBDATA.ZONE)
+	sv_a = urhk_TBAF_ChangeFieldValue("datablk2.inward_tt_flg|Y")
+	sv_a = urhk_TBAF_ChangeFieldValue("datablk2.outward_tt_flg|Y")
+	sv_a = urhk_TBAF_ChangeFieldValue("datablk2.local_clg_flg|Y")
+	sv_a = urhk_TBAF_ChangeFieldValue("datablk2.spl_coll_centre_flg|Y")
+	sv_a = urhk_TBAF_ChangeFieldValue("datablk2.clg_rep_code|NRB")
+	sv_a = urhk_TBAF_ChangeFieldValue("datablk2.dd_iss_br_name|" + STDWFS.GLBDATA.BRANCH_NAME)
+ENDIF
+IF (sv_b == 3) THEN	
+	sv_a = urhk_TBAF_ChangeFieldValue("listblk.paysys_id|SWIFT")
+	sv_a = urhk_TBAF_ChangeFieldValue("listblk.bank_identifier|NIBLNPKT")
+	sv_a = urhk_TBAF_ChangeFieldValue("listblk.bke_arrangement|Y")
+	sv_a = urhk_TBAF_ChangeFieldValue("listblk.include_charge|N")
+	sv_a = urhk_TBAF_ChangeFieldValue("listblk.del_flg|N")
+ENDIF
+IF (sv_b == 4) THEN	
+	sv_a = urhk_TBAF_ChangeFieldValue("funcblk.func_code|M")
+ENDIF
+IF (sv_b == 5) THEN	
+	sv_a = urhk_TBAF_ChangeFieldValue("o.optn_code|S")
+ENDIF
+IF (sv_b == 6) THEN	
+	sv_a = urhk_TBAF_ChangeFieldValue("listblk.sol_id|" + STDWFS.GLBDATA.NEW_SOL_ID)
+	sv_a = urhk_TBAF_ChangeFieldValue("listblk.br_code|" + STDWFS.GLBDATA.NEW_SOL_ID)
+	sv_a = urhk_TBAF_ChangeFieldValue("listblk.extn_cntr_code|00")
+	sv_a = urhk_TBAF_ChangeFieldValue("listblk.sol_desc|" + STDWFS.GLBDATA.BRANCH_NAME)
+ENDIF
+IF (sv_b == 7) THEN	
+	sv_a = urhk_TBAF_ChangeFieldValue("d1.abbr_bank_name|NIB")
+	sv_a = urhk_TBAF_ChangeFieldValue("d1.abbr_br_name|" + STDWFS.GLBDATA.BRANCH_ABBR)
+	sv_a = urhk_TBAF_ChangeFieldValue("d1.abbr_br_name|" + STDWFS.GLBDATA.BRANCH_ABBR)
+	sv_a = urhk_TBAF_ChangeFieldValue("d1.addr_1|" + STDWFS.GLBDATA.ADDRESS)
+	sv_a = urhk_TBAF_ChangeFieldValue("d1.clg_centre_num|1")
+	sv_a = urhk_TBAF_ChangeFieldValue("d1.micr_centre_flg|N")
+	sv_a = urhk_TBAF_ChangeFieldValue("d1.state_code|" + STDWFS.GLBDATA.ZONE)
+	sv_a = urhk_TBAF_ChangeFieldValue("d1.wkly_off|7")
+	sv_a = urhk_TBAF_ChangeFieldValue("d1.next_cust_num_code|NIBCI")
+	sv_a = urhk_TBAF_ChangeFieldValue("d1.sol_alias|" + STDWFS.GLBDATA.NEW_SOL_ID)
+	sv_a = urhk_TBAF_ChangeFieldValue("d1.date_of_installation|" + left$(BANCS.STDIN.BODDate,10))
+	
+	sv_a = urhk_TBAF_ChangeFieldValue("d2.instrmnt_wise_reg_alwd|N")
+	sv_a = urhk_TBAF_ChangeFieldValue("d2.user_cash_dr_lim_excp_code|UL3")
+	sv_a = urhk_TBAF_ChangeFieldValue("d2.user_clg_dr_lim_excp_code|GU3")
+	sv_a = urhk_TBAF_ChangeFieldValue("d2.user_xfer_dr_lim_excp_code|LU3")
+	sv_a = urhk_TBAF_ChangeFieldValue("d2.cut_over_time|23:59:59")
+	sv_a = urhk_TBAF_ChangeFieldValue("d2.value_dating_on_holidays|Y")
+	sv_a = urhk_TBAF_ChangeFieldValue("d2.type_of_cash_acct|T")
+	
+	sv_a = urhk_TBAF_ChangeFieldValue("d3.br_open_date|" + left$(BANCS.STDIN.BODDate,10))
+	#sv_a = urhk_TBAF_ChangeFieldValue("d3.uniform_br_code|11004" + STDWFS.GLBDATA.NRB_CODE)
+	sv_a = urhk_TBAF_ChangeFieldValue("d3.uniform_br_code|" + STDWFS.GLBDATA.NRB_CODE)
+	sv_a = urhk_TBAF_ChangeFieldValue("d3.partition_alias|00")
+	
+	sv_a = urhk_TBAF_ChangeFieldValue("d3.region_name|INSIDE VALLEY")
+	IF (STDWFS.GLBDATA.REGION_NAME == "OUTVAL") THEN
+		sv_a = urhk_TBAF_ChangeFieldValue("d3.region_name|OUTSIDE VALLEY")
+	ENDIF
+	sv_a = urhk_TBAF_ChangeFieldValue("d3.division_name|" + STDWFS.GLBDATA.BRANCH_NAME)
+	sv_a = urhk_TBAF_ChangeFieldValue("d3.circle_office_name|" + STDWFS.GLBDATA.BRANCH_NAME)
+	sv_a = urhk_TBAF_ChangeFieldValue("d3.tds_circle_name|" + STDWFS.GLBDATA.BRANCH_NAME)
+	sv_a = urhk_TBAF_ChangeFieldValue("d3.tax_dedn_details|TAX DEDUCTED")
+	sv_a = urhk_TBAF_ChangeFieldValue("d3.osp_max_out_std_days|1")
+	sv_a = urhk_TBAF_ChangeFieldValue("d3.proxy_pend_verifn_excp_code|PX2")
+	sv_a = urhk_TBAF_ChangeFieldValue("d3.proxy_not_squared_excp_code|OU3")
+	
+	sv_a = urhk_TBAF_ChangeFieldValue("d4.tr_enable_flg|N")
+	sv_a = urhk_TBAF_ChangeFieldValue("d4.sol_priority|1")
+	sv_a = urhk_TBAF_ChangeFieldValue("d4.high_value_sol|N")
+	sv_a = urhk_TBAF_ChangeFieldValue("d4.external_sol|N")
+	sv_a = urhk_TBAF_ChangeFieldValue("d4.profit_center|Y")
+	sv_a = urhk_TBAF_ChangeFieldValue("d4.tr_home_crncy_code|NPR")
+	sv_a = urhk_TBAF_ChangeFieldValue("d4.all_ext_trans_proc_excp_code|EX3")
+	sv_a = urhk_TBAF_ChangeFieldValue("d4.fab_flg|N")
+	sv_a = urhk_TBAF_ChangeFieldValue("d4.sdl_id|ALL")
+ENDIF
+IF (sv_b == 8) THEN	
+	sv_a = urhk_TBAF_ChangeFieldValue("funcblk.func_code|A")
+	sv_a = urhk_TBAF_ChangeFieldValue("funcblk.sol_id|" + STDWFS.GLBDATA.NEW_SOL_ID)
+ENDIF 
+IF (sv_b == 9) THEN	
+	sv_a = urhk_TBAF_ChangeFieldValue("datablk.ratex_reqd|N")
+	sv_a = urhk_TBAF_ChangeFieldValue("datablk.extn_aft_expiry_excp|EE2")
+	sv_a = urhk_TBAF_ChangeFieldValue("datablk.cncln_aft_expiry_excp|CW2")
+	sv_a = urhk_TBAF_ChangeFieldValue("datablk.late_early_del_excp_code|LW1")
+	sv_a = urhk_TBAF_ChangeFieldValue("datablk.fwc_exists_excp|FW3")
+	sv_a = urhk_TBAF_ChangeFieldValue("datablk.incorr_event_fwc_util_excp|IW3")
+	
+	sv_a = urhk_TBAF_ChangeFieldValue("datablk1.tc_locn_class|DL")
+	sv_a = urhk_TBAF_ChangeFieldValue("datablk1.tc_locn_code|DL")
+	sv_a = urhk_TBAF_ChangeFieldValue("datablk1.cn_locn_class|DL")
+	sv_a = urhk_TBAF_ChangeFieldValue("datablk1.cn_locn_code|DL")
+	sv_a = urhk_TBAF_ChangeFieldValue("datablk1.dd_locn_class|DL")
+	sv_a = urhk_TBAF_ChangeFieldValue("datablk1.dd_locn_code|DL")
+ENDIF
+IF (sv_b == 10) THEN	
+	sv_a = urhk_TBAF_ChangeFieldValue("datablk.from_sol_id|" + STDWFS.GLBDATA.COPYFROM_SOL_ID)
+	sv_a = urhk_TBAF_ChangeFieldValue("datablk.to_sol_set_id|" + STDWFS.GLBDATA.NEW_SOL_ID)
+ENDIF
+IF (sv_b == 11) THEN	
+	sv_a = urhk_TBAF_ChangeFieldValue("datablk.from_sol_id|" + STDWFS.GLBDATA.COPYFROM_SOL_ID)
+	sv_a = urhk_TBAF_ChangeFieldValue("datablk.to_sol_id|" + STDWFS.GLBDATA.NEW_SOL_ID)
+	sv_a = urhk_TBAF_ChangeFieldValue("datablk.str_to_be_replaced|" + STDWFS.GLBDATA.NEW_SOL_ID)
+	sv_a = urhk_TBAF_ChangeFieldValue("datablk.from_pos_in_acct|1")
+ENDIF
+IF (sv_b == 12) THEN	
+	sv_a = urhk_TBAF_ChangeFieldValue("funcblk.func_code|R")
+ENDIF 
+IF (sv_b == 13) THEN	
+	sv_a = urhk_TBAF_ChangeFieldValue("rdatablk.source_sol_id|"+ STDWFS.GLBDATA.COPYFROM_SOL_ID)
+	sv_a = urhk_TBAF_ChangeFieldValue("rdatablk.replication_set_id|"+ STDWFS.GLBDATA.NEW_SOL_ID)
+ENDIF 
+End:
+TRACE OFF
+EXITSCRIPT
+end-->

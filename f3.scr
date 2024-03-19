@@ -1,0 +1,6 @@
+<--start
+#trace on
+
+BANCS.OUTPUT.successOrFailure = "S"
+trace off
+end-->

@@ -1,0 +1,52 @@
+7X:
+172.31.220.5
+finadm
+finaclemig
+
+path to cust/scr:
+cd /finacle/app/base/cust
+
+
+1.  amountXfrToHo.scr <CS>   -->> MTT Transactions
+2.  ibbor.scr -->   int_ibborw.lst, MTT
+3   iblen_pla_overdue.scr --> 
+4.  iblem_pla.scr --> intiblenpla.lst
+5.  laa_int_penal.scr <CS> --> C_LAAPENAL table
+6.  LockerAnnualCharge.scr <CS>
+7.  mBankingFee_SBSBK.scr  --> 
+8.  td_Closure.scr"--> tbaadm.commonpackage.getConvTRate1 --> "001360601005"
+8.  mposReversal.scr --> MTT
+9.  nostro_xfr_batch_job.scr --> MTT
+10. ODA_int_penal_book.scr --> C_EIT_ODA --> CUSTOM.C_EIT_ODA --> MTT
+11. C_EXCLUE, TBAADM.CUST_OTP_CHARGE_TABLE __. tbaadm.commonpackage.getConvTRate1
+
+12. RPC_PR_PENAL.scr"--> C_PCAPENAL C_PCAPENAL , MTT ,, CUSTOm, TABLE
+13. NIBL_PNL_new.scr --> MTT
+14. position_fx_transfer.scr"--> MTT
+15. reval.scr  --> "reval.com", MTT, "reval.mrt"
+16. provision_batch.scr" --> MTT
+17. SPOT_pstupdt.scr <CS>
+18. INSUSBSBK.scr --> 
+19 "SPOTBatch.scr"-->C_SPOT. MTT
+
+
+
+
+urhk_dbCursorOpen --> urhk_dbCursorOpen
+
+
+
+:%s/Control v+M//
+
+
+
+iblen_pla.scr
+
+ print(BANCS.STDIN.mySolId)
+   +65  #FOLLOWNING LINE IS TO GENERATE LIST FILE TO BE USED BY IBLPI BATCH JOB
+   +66  sv_w = SYSTEM("rm -f intiblenpla" + BANCS.STDIN.mySolId + ".lst")
+   +67  #CREATE BLANK FILE USED IF BATCH JOB FAILS
+   +68  sv_w = SYSTEM("touch intiblenpla" + BANCS.STDIN.mySolId + ".lst")
+   +69  #LEFT$(BANCS.STDIN.BODDate,10)
+   +70  IBPLA.SETLM.BODDate = LEFT$(BANCS.STDIN.BODDate,10)
+   +71  print(IBPLA.SETLM.BODDate)

@@ -1,0 +1,407 @@
+<--start
+TRACE ON
+sv_b = STDWFS.WFSINPUT.NextStep
+print (sv_b)
+STDWFS.WFSINPUT.IgnoreSameUserVerifyFlg="Y"
+#CREATE REPOS AND CLASS
+sv_r = REPEXISTS("STDWFS")
+IF (sv_r == 0) THEN
+	CREATEREP("STDWFS")
+ENDIF
+sv_r = CLASSEXISTS("STDWFS", "GLBDATA")
+IF (sv_r == 0) THEN
+	CREATECLASS("STDWFS", "GLBDATA", 5)
+ENDIF
+
+sv_r = CLASSEXISTS("STDWFS", "WFSLIST")
+IF (sv_r == 0) THEN
+	CREATECLASS("STDWFS", "WFSLIST", 5)
+ENDIF
+
+sv_r = CLASSEXISTS("STDWFS", "WFSTYPE")
+IF (sv_r == 0) THEN
+	CREATECLASS("STDWFS", "WFSTYPE", 5)
+ENDIF
+STDWFS.GLBDATA.ValDone = "N"
+STDWFS.GLBDATA.f3Pressed = "N"
+STDWFS.GLBDATA.continue = "N"
+STDWFS.WFSINPARAMVAL.FormTitle = "Customized"
+
+sv_s = "SOL_ID, N_SOL_ID|SELECT MAX(SOL_ID), LPAD(MAX(SOL_ID)+1, 3,0) FROM SOL WHERE SOL_ID <'999' AND DEL_FLG='N' "
+sv_a = urhk_dbSelect (sv_s)
+sv_t = BANCS.OUTPARAM.SOL_ID
+#HARDCODING FOR NOW
+#sv_t = "049"
+sv_n =  BANCS.OUTPARAM.N_SOL_ID
+
+STDWFS.WFSINPARAMVAL.NEW_SOL_ID =	"New SOLID"
+STDWFS.WFSINPARAMLEN.NEW_SOL_ID = "3"
+STDWFS.WFSOUTPARAM.NEW_SOL_ID = sv_n
+STDWFS.WFSTYPE.NEW_SOL_ID = "S"
+
+STDWFS.WFSINPARAMVAL.COPYFROM_SOL_ID =	"Copy From SOLID"
+STDWFS.WFSINPARAMLEN.COPYFROM_SOL_ID = "3"
+STDWFS.WFSOUTPARAM.COPYFROM_SOL_ID = sv_t
+STDWFS.WFSTYPE.COPYFROM_SOL_ID = "S"
+STDWFS.WFSLIST.COPYFROM_SOL_ID = "SOL_MAST_LIST"
+
+STDWFS.WFSINPARAMVAL.BRANCH_NAME =	"Branch Name"
+STDWFS.WFSINPARAMLEN.BRANCH_NAME = "20"
+STDWFS.WFSOUTPARAM.BRANCH_NAME = ""
+STDWFS.WFSTYPE.BRANCH_NAME = "S"
+
+STDWFS.WFSINPARAMVAL.SHORT_NAME =	"Branch Short Name"
+STDWFS.WFSINPARAMLEN.SHORT_NAME = "3"
+STDWFS.WFSOUTPARAM.SHORT_NAME = ""
+STDWFS.WFSTYPE.SHORT_NAME = "S"
+
+STDWFS.WFSINPARAMVAL.BRANCH_ABBR =	"Branch Abbr Code"
+STDWFS.WFSINPARAMLEN.BRANCH_ABBR = "2"
+STDWFS.WFSOUTPARAM.BRANCH_ABBR = ""
+STDWFS.WFSTYPE.BRANCH_ABBR = "S"
+
+STDWFS.WFSINPARAMVAL.ADDRESS =	"Branch Address"
+STDWFS.WFSINPARAMLEN.ADDRESS = "25"
+STDWFS.WFSOUTPARAM.ADDRESS = ""
+STDWFS.WFSTYPE.ADDRESS = "S"
+
+STDWFS.WFSINPARAMVAL.DISTRICT =	"District"
+STDWFS.WFSINPARAMLEN.DISTRICT = "5"
+STDWFS.WFSOUTPARAM.DISTRICT = ""
+STDWFS.WFSTYPE.DISTRICT = "S"
+STDWFS.WFSLIST.DISTRICT = "REF_CODE_LIST|01"
+
+STDWFS.WFSINPARAMVAL.ZONE =	"Zone"
+STDWFS.WFSINPARAMLEN.ZONE = "5"
+STDWFS.WFSOUTPARAM.ZONE = ""
+STDWFS.WFSTYPE.ZONE = "S"
+STDWFS.WFSLIST.ZONE = "REF_CODE_LIST|02"
+
+STDWFS.WFSINPARAMVAL.REGION_NAME =	"Region"
+STDWFS.WFSINPARAMLEN.REGION_NAME = "6"
+STDWFS.WFSOUTPARAM.REGION_NAME = ""
+STDWFS.WFSTYPE.REGION_NAME = "S"
+STDWFS.WFSLIST.REGION_NAME = "SET_MAST_LIST|02"
+
+STDWFS.WFSINPARAMVAL.PROVINCE_NAME =	"Province"
+STDWFS.WFSINPARAMLEN.PROVINCE_NAME = "5"
+STDWFS.WFSOUTPARAM.PROVINCE_NAME = ""
+STDWFS.WFSTYPE.PROVINCE_NAME = "S"
+STDWFS.WFSLIST.PROVINCE_NAME = "SET_MAST_LIST|02"
+
+STDWFS.WFSINPARAMVAL.NRB_CODE =    "NRB Code"
+STDWFS.WFSINPARAMLEN.NRB_CODE = "8"
+STDWFS.WFSOUTPARAM.NRB_CODE = ""
+STDWFS.WFSTYPE.NRB_CODE = "S"
+
+STDWFS.GLBDATA.cnt = 12
+while (STDWFS.GLBDATA.cnt <=34)
+	sv_a = urhk_TBAF_SetAttrib("bafi2020.datablk.field_" + STDWFS.GLBDATA.cnt + "|H")
+	sv_a = urhk_TBAF_SetAttrib("bafi2020.datablk.field_" + STDWFS.GLBDATA.cnt + "|P")
+	STDWFS.GLBDATA.cnt = cint(STDWFS.GLBDATA.cnt) + 1
+do
+sv_a = urhk_TBAF_SetKeyScript("bafi2020.datablk.key-f1|f3.scr|4")
+sv_a = urhk_TBAF_SetKeyScript("bafi2020.datablk.key-rtexit|f3.scr|4")
+sv_u = urhk_TBAF_SetKeyScript("bafi2020.datablk.key-f2|SOL_create_1.scr|0")
+sv_u = urhk_TBAF_SetKeyScript("bafi2020.datablk.key-commit|SOL_create_1.scr|99")
+sv_a = urhk_B2K_ShowParamAcptFrm("bafi2020")
+IF(STDWFS.GLBDATA.f3Pressed == "Y") THEN
+	GOTO Finish
+ENDIF
+IF (STDWFS.GLBDATA.continue == "Y") THEN
+	# STDWFS.GLBDATA.NEW_SOL_ID = "052"
+	# STDWFS.GLBDATA.COPYFROM_SOL_ID = "046"
+	# STDWFS.GLBDATA.BRANCH_NAME = "KIRTIPUR"
+	# STDWFS.GLBDATA.SHORT_NAME = "KIR"
+	# STDWFS.GLBDATA.BRANCH_ABBR = "KI"
+	# STDWFS.GLBDATA.ADDRESS = "KIRTIPUR"
+	# STDWFS.GLBDATA.DISTRICT = "KATHM"
+	# STDWFS.GLBDATA.ZONE = "BAGM"
+	# STDWFS.GLBDATA.REGION_NAME = "INVAL"
+	##START BRTM
+	sv_s = "CNT|SELECT COUNT(1) FROM BCT WHERE BANK_CODE='004' AND BR_CODE='" + STDWFS.GLBDATA.NEW_SOL_ID  + "' "
+	print(sv_s)
+	sv_a = urhk_dbSelect (sv_s)
+	IF (BANCS.OUTPARAM.CNT == 0) THEN
+		sv_a = urhk_TBAF_SetReplayKey("baff0005.funcblk.key-f2|SOL_create_1.scr|1|SOL_create_1.scr|2")
+		sv_a = urhk_TBAF_SetReplayKey("baff0005.datablk1.key-f2")
+		sv_a = urhk_TBAF_SetValue("baff0005.optnblk1.optn_code|P")
+		sv_a = urhk_TBAF_SetReplayKey("baff0005.optnblk1.key-f2|||SOL_create_1.scr|3")
+		sv_a = urhk_TBAF_SetReplayKey("baff0005.listblk.key-nxtrec")
+		sv_a = urhk_TBAF_SetReplayKey("baff0005.listblk.key-f2")
+		sv_a = urhk_TBAF_SetReplayKey("baff0005.optnblk1.key-commit")
+		sv_a = urhk_TBAF_SetReplayKey("baff0005.funcblk.key-f1|f3.scr")
+		sv_a = urhk_WFS_CallMenuOption("BRTM|0|1")
+		IF (STDWFS.WFSINPUT.StepCommitFlg == "Y") THEN
+			sv_s = "UPDATE BCT SET DD_ISS_BR_CODE=BR_CODE, DC_ALIAS='DC', CNTRY_CODE='NP' WHERE BANK_CODE='004' AND BR_CODE='" + STDWFS.GLBDATA.NEW_SOL_ID  + "' "
+			print(sv_s)
+			sv_a = urhk_dbSQL (sv_s)
+			IF(sv_a != 0) THEN
+				sv_a = "Cannot create Branch in BCT"
+				print(sv_a)
+				sv_a = urhk_TBAF_DispMesg (sv_a)
+				GOTO  Finish
+			ENDIF		
+			sv_a = urhk_dbSQL ("commit")
+		ENDIF
+	ENDIF
+	##END BRTM
+	##START SCFM
+	sv_s = "CNT|SELECT COUNT(1) FROM SOL WHERE SOL_ID='" + STDWFS.GLBDATA.NEW_SOL_ID  + "' "
+	print(sv_s)
+	sv_a = urhk_dbSelect (sv_s)
+	IF (BANCS.OUTPARAM.CNT == 0) THEN
+		sv_a = urhk_TBAF_SetReplayKey("baff0035.funcblk.key-f2|SOL_create_1.scr|4")
+		sv_a = urhk_TBAF_SetReplayKey("baff0035.d1.key-f2")
+		sv_a = urhk_TBAF_SetReplayKey("baff0035.o.key-f2|SOL_create_1.scr|5")
+		sv_s = "CNT|SELECT COUNT(1) FROM SOL"
+		sv_a = urhk_dbSelect (sv_s)
+		sv_c = cint(BANCS.OUTPARAM.CNT)
+		while (sv_c >1 )
+			sv_a = urhk_TBAF_SetReplayKey("baff0035.listblk.key-nxtrec")
+			sv_c = sv_c - 1
+		DO
+		sv_a = urhk_TBAF_SetReplayKey("baff0035.listblk.key-nxtrec|||SOL_create_1.scr|6")
+		sv_a = urhk_TBAF_SetReplayKey("baff0035.listblk.key-clrrec")
+		sv_a = urhk_TBAF_SetReplayKey("baff0047.d1.key-f2|SOL_create_1.scr|7")
+		sv_a = urhk_TBAF_SetReplayKey("baff0035.listblk.key-f2")
+		sv_a = urhk_TBAF_SetReplayKey("baff0035.o.key-commit")
+		sv_a = urhk_TBAF_SetReplayKey("baff0035.funcblk.key-f1|f3.scr")
+		sv_a = urhk_WFS_CallMenuOption("SCFM|0|1")
+		IF (STDWFS.WFSINPUT.StepCommitFlg == "Y") THEN
+			
+		ELSE
+			sv_a = "SCFM failed !!"
+			print(sv_a)
+			sv_a = urhk_TBAF_DispMesg (sv_a)
+			GOTO  Finish
+		ENDIF
+	ENDIF
+	##END SCFM
+	##START SST
+	sv_s = "CNT|SELECT SUM(DECODE(SOL_ID,'" + STDWFS.GLBDATA.COPYFROM_SOL_ID +"',1,-1)) CNT FROM SST WHERE SOL_ID IN ('" + STDWFS.GLBDATA.COPYFROM_SOL_ID +"','" + STDWFS.GLBDATA.NEW_SOL_ID  + "') "
+	print(sv_s)
+	sv_a = urhk_dbSelect (sv_s)
+	IF (BANCS.OUTPARAM.CNT > 0) THEN
+		sv_s = "INSERT ALL INTO SST VALUES ("
+		sv_s = sv_s + "'" + STDWFS.GLBDATA.REGION_NAME +"', '" + STDWFS.GLBDATA.NEW_SOL_ID  + "', '" + BANCS.STDIN.userId + "', SYSDATE, '" + BANCS.STDIN.userId + "', SYSDATE, 0) "
+		sv_s = sv_s + "INTO SST VALUES ('BRANCHES', '" + STDWFS.GLBDATA.NEW_SOL_ID  + "', '" + BANCS.STDIN.userId + "', SYSDATE, '" + BANCS.STDIN.userId + "', SYSDATE, 0) "
+		sv_s = sv_s + "INTO SST VALUES ('" + STDWFS.GLBDATA.PROVINCE_NAME + "', '" + STDWFS.GLBDATA.NEW_SOL_ID  + "', '" + BANCS.STDIN.userId + "', SYSDATE, '" + BANCS.STDIN.userId + "', SYSDATE, 0) "
+		sv_s = sv_s + "SELECT * FROM DUAL"
+		sv_a = urhk_dbSQL (sv_s)
+		IF(sv_a != 0) THEN
+			sv_a = "Cannot insert into SST"
+			print(sv_a)
+			sv_a = urhk_TBAF_DispMesg (sv_a)
+			GOTO  Finish
+		ENDIF
+		sv_a = urhk_dbSQL ("COMMIT")
+	ENDIF
+	##END SST	
+	##START MNTFCT
+	sv_s = "CNT|SELECT COUNT(1) FROM FCT WHERE SOL_ID='" + STDWFS.GLBDATA.NEW_SOL_ID  + "' "
+	print(sv_s)
+	sv_a = urhk_dbSelect (sv_s)
+	IF (BANCS.OUTPARAM.CNT == 0) THEN
+		sv_a = urhk_TBAF_SetReplayKey("fxff0045.funcblk.key-f2|SOL_create_1.scr|8|SOL_create_1.scr|9")
+		sv_a = urhk_TBAF_SetReplayKey("fxff0045.datablk.key-commit")
+		sv_a = urhk_TBAF_SetReplayKey("fxff0045.funcblk.key-f1|f3.scr")
+		sv_a = urhk_WFS_CallMenuOption("MNTFCT|0|1")
+		IF (STDWFS.WFSINPUT.StepCommitFlg == "Y") THEN
+			
+		ELSE
+			sv_a = "MNTFCT failed !!"
+			print(sv_a)
+			sv_a = urhk_TBAF_DispMesg (sv_a)
+			GOTO  Finish
+		ENDIF
+	ENDIF
+	##END MNTFCT
+	##START HOL TABLE
+	sv_s = "CNT|SELECT COUNT(1) FROM HOL WHERE CAL_B2K_TYPE='BRANCH' AND CAL_B2K_ID='" + STDWFS.GLBDATA.NEW_SOL_ID  + "' "
+	print(sv_s)
+	sv_a = urhk_dbSelect (sv_s)
+	IF (BANCS.OUTPARAM.CNT == 0) THEN
+		sv_s = "INSERT INTO HOL "
+		sv_s = sv_s + "SELECT CAL_B2K_TYPE, '" + STDWFS.GLBDATA.NEW_SOL_ID  + "' CAL_B2K_ID, MMYYYY, DEL_FLG, HLDY_STR, COMMENT_STR, "
+		sv_s = sv_s + "RECVD_STR, STATUS, '" + BANCS.STDIN.userId + "' LCHG_USER_ID, SYSDATE LCHG_TIME, '" + BANCS.STDIN.userId + "' RCRE_USER_ID, "
+		sv_s = sv_s + "SYSDATE RCRE_TIME, 0 TS_CNT  FROM HOL WHERE "
+		#sv_s = sv_s + "MMYYYY>=(SELECT TO_CHAR(DB_STAT_DATE,'MMYYYY') FROM GCT) AND "
+		#FOLLOWING LINE ONLY FOR ACE MIGRATION
+		#sv_s = sv_s + "CAL_B2K_TYPE='BRANCH' AND CAL_B2K_ID='001' "
+		sv_s = sv_s + "CAL_B2K_TYPE='BRANCH' AND CAL_B2K_ID='" + STDWFS.GLBDATA.COPYFROM_SOL_ID +"' "
+		print(sv_s)
+		sv_a = urhk_dbSQL (sv_s)
+		IF(sv_a != 0) THEN
+			sv_a = "Cannot insert in HOL"
+			print(sv_a)
+			sv_a = urhk_TBAF_DispMesg (sv_a)
+			GOTO  Finish
+		ENDIF			
+		sv_a = urhk_dbSQL ("COMMIT")
+	ENDIF
+	##END HOL TABLE
+	##START GLSHR
+	sv_s = "CNT|SELECT SUM(DECODE(SOL_ID,'" + STDWFS.GLBDATA.COPYFROM_SOL_ID +"',1,-1)) CNT FROM GSH WHERE SOL_ID IN ('" + STDWFS.GLBDATA.COPYFROM_SOL_ID +"','" + STDWFS.GLBDATA.NEW_SOL_ID  + "')"
+	print(sv_s)
+	sv_a = urhk_dbSelect (sv_s)
+	IF (BANCS.OUTPARAM.CNT > 0) THEN
+		sv_a = urhk_TBAF_SetReplayKey("baff0186.datablk.key-commit|SOL_create_1.scr|10")
+		# ------------------------------------------------------------- 
+		# This invokes the Foreground/Background print window 
+		# ------------------------------------------------------------- 
+		sv_v = "bafe3021.headerblk.back_fore_flg|F" 
+		print(sv_v) 
+		sv_a = urhk_TBAF_SetValue(sv_v) 
+		sv_v = "bafe3021.headerblk.print_flg|N" 
+		print(sv_v) 
+		sv_a = urhk_TBAF_SetValue(sv_v) 
+		sv_a = urhk_TBAF_SetReplayKey("bafe3021.headerblk.key-commit") 
+		print(sv_a) 
+		sv_a = urhk_TBAF_SetReplayKey("bafe3021.datablk.report_to.key-f1") 
+		print(sv_a)
+		#F3 KEY
+		sv_a = urhk_TBAF_SetReplayKey("baff0186.datablk.key-f1|f3.scr")
+		sv_a = urhk_WFS_CallMenuOption("GLSHR|0|1")
+		IF (STDWFS.WFSINPUT.StepCommitFlg == "Y") THEN
+			
+		ELSE
+			sv_a = "GLSHR failed !!"
+			print(sv_a)
+			sv_a = urhk_TBAF_DispMesg (sv_a)
+			GOTO  Finish
+		ENDIF	
+	ENDIF
+	##END GLSHR
+	##START OACR
+	sv_s = "CNT|SELECT SUM(DECODE(SOL_ID,'" + STDWFS.GLBDATA.COPYFROM_SOL_ID +"',1,-1)) CNT FROM GAM WHERE ACCT_OWNERSHIP='O' AND SOL_ID IN ('" + STDWFS.GLBDATA.COPYFROM_SOL_ID +"','" + STDWFS.GLBDATA.NEW_SOL_ID  + "')"
+	print(sv_s)
+	sv_a = urhk_dbSelect (sv_s)
+	IF (BANCS.OUTPARAM.CNT > 0) THEN
+		sv_a = urhk_TBAF_SetReplayKey("oaff0006.datablk.key-commit|SOL_create_1.scr|11")
+		# ------------------------------------------------------------- 
+		# This invokes the Foreground/Background print window 
+		# ------------------------------------------------------------- 
+		sv_v = "bafe3021.headerblk.back_fore_flg|F" 
+		print(sv_v) 
+		sv_a = urhk_TBAF_SetValue(sv_v) 
+		sv_v = "bafe3021.headerblk.print_flg|N" 
+		print(sv_v) 
+		sv_a = urhk_TBAF_SetValue(sv_v) 
+		sv_a = urhk_TBAF_SetReplayKey("bafe3021.headerblk.key-commit") 
+		print(sv_a) 
+		sv_a = urhk_TBAF_SetReplayKey("bafe3021.datablk.report_to.key-f1") 
+		print(sv_a)
+		#F3 KEY
+		sv_a = urhk_TBAF_SetReplayKey("oaff0006.datablk.key-f1|f3.scr")
+		sv_a = urhk_WFS_CallMenuOption("OACR|0|1")
+		IF (STDWFS.WFSINPUT.StepCommitFlg == "Y") THEN
+			
+		ELSE
+			sv_a = "OACR failed !!"
+			print(sv_a)
+			sv_a = urhk_TBAF_DispMesg (sv_a)
+			GOTO  Finish
+		ENDIF
+	ENDIF
+	##END OACR
+	##START tbaadm.c_fx_reval 
+	sv_s = "CNT|SELECT COUNT(1) CNT FROM TBAADM.C_FX_REVAL WHERE SOL_ID='" + STDWFS.GLBDATA.NEW_SOL_ID  + "' "
+	print(sv_s)
+	sv_a = urhk_dbSelect (sv_s)
+	IF (BANCS.OUTPARAM.CNT == 0) THEN
+		sv_s = "INSERT INTO TBAADM.C_FX_REVAL (ACCT_LABEL, PANDL_ACCT, RATE_CODE, SOL_ID) VALUES ('POSITION','" + STDWFS.GLBDATA.NEW_SOL_ID + "370101001','REV','" + STDWFS.GLBDATA.NEW_SOL_ID  + "') "
+		print(sv_s)
+		sv_a = urhk_dbSQL (sv_s)
+		IF(sv_a != 0) THEN
+			sv_a = "cannot insert into TBAADM.C_FX_REVAL"
+			print(sv_a)
+			sv_a = urhk_TBAF_DispMesg (sv_a)
+			GOTO  Finish
+		ENDIF	
+		sv_a = urhk_dbSQL ("COMMIT")
+	ENDIF
+	##END tbaadm.c_fx_reval 
+	##START BJSTM
+	sv_s = "CNT|SELECT SUM(DECODE(SOL_ID,'" + STDWFS.GLBDATA.COPYFROM_SOL_ID +"',1,-1)) CNT FROM BJS WHERE SOL_ID IN ('" + STDWFS.GLBDATA.COPYFROM_SOL_ID +"','" + STDWFS.GLBDATA.NEW_SOL_ID  + "') AND DEL_FLG='N'"
+	print(sv_s)
+	sv_a = urhk_dbSelect (sv_s)
+	IF (BANCS.OUTPARAM.CNT > 0) THEN
+		sv_a = urhk_TBAF_SetReplayKey("baff0031.funcblk.key-f2|SOL_create_1.scr|12|SOL_create_1.scr|13")
+		sv_a = urhk_TBAF_SetReplayKey("baff0031.rdatablk.key-commit")
+		sv_a = urhk_TBAF_SetReplayKey("baff0031.funcblk.key-f1|f3.scr")
+		sv_a = urhk_WFS_CallMenuOption("BJSTM|0|1")
+		IF (STDWFS.WFSINPUT.StepCommitFlg == "Y") THEN
+			sv_s = "INSERT INTO BJS (SOL_ID, JOB_ID, DEL_FLG, JOB_DESC, FILE_NAME, FILE_SRL_NUM, JOB_FREQ_TYPE, JOB_FREQ_WEEK_NUM, JOB_FREQ_WEEK_DAY, JOB_FREQ_START_DD, "
+			sv_s = sv_s + "JOB_FREQ_HLDY_STAT, JOB_GRACE_PERD, EXEC_STOP_DATE, NEXT_EXEC_DATE, JOB_ACTIVE_FLG, EXEC_DB_STAT_CODE, JOB_PRIO_NUM, PARM_AREA, LCHG_USER_ID, LCHG_TIME, "
+			sv_s = sv_s + "RCRE_USER_ID, RCRE_TIME, TRAN_CREATE_FLG, TS_CNT, JOB_TYPE, BLOCKING_JOB, JOB_CATEGORY) "
+			sv_s = sv_s + "SELECT '" + STDWFS.GLBDATA.NEW_SOL_ID  + "' SOL_ID, JOB_ID, DEL_FLG, JOB_DESC, FILE_NAME, FILE_SRL_NUM, JOB_FREQ_TYPE, JOB_FREQ_WEEK_NUM, JOB_FREQ_WEEK_DAY, "
+			sv_s = sv_s + "JOB_FREQ_START_DD, JOB_FREQ_HLDY_STAT, JOB_GRACE_PERD, EXEC_STOP_DATE, NEXT_EXEC_DATE, JOB_ACTIVE_FLG, EXEC_DB_STAT_CODE, JOB_PRIO_NUM, "
+			sv_s = sv_s + "REPLACE(REPLACE(PARM_AREA,'" + STDWFS.GLBDATA.COPYFROM_SOL_ID +".lst','" + STDWFS.GLBDATA.NEW_SOL_ID  + ".lst'),' " + STDWFS.GLBDATA.COPYFROM_SOL_ID +" ',' " + STDWFS.GLBDATA.NEW_SOL_ID  + " ') PARM_AREA, "
+			sv_s = sv_s + "'" + BANCS.STDIN.userId + "' LCHG_USER_ID, SYSDATE LCHG_TIME, '" + BANCS.STDIN.userId + "' RCRE_USER_ID, SYSDATE RCRE_TIME, TRAN_CREATE_FLG, 0 TS_CNT, JOB_TYPE, BLOCKING_JOB, JOB_CATEGORY "
+			sv_s = sv_s + "FROM BJS WHERE SOL_ID='" + STDWFS.GLBDATA.COPYFROM_SOL_ID +"' AND DEL_FLG='N' "
+			sv_s = sv_s + "AND JOB_ID NOT IN (SELECT JOB_ID FROM BJS WHERE SOL_ID='" + STDWFS.GLBDATA.NEW_SOL_ID  + "')"
+			print(sv_s)
+			sv_a = urhk_dbSQL (sv_s)
+			IF(sv_a != 0) THEN
+				sv_a = "Cannot insert into BJS"
+				print(sv_a)
+				sv_a = urhk_TBAF_DispMesg (sv_a)
+				GOTO  Finish
+			ENDIF		
+			sv_a = urhk_dbSQL ("COMMIT")
+			sv_s = "CNT|SELECT SUM(DECODE(SOL_ID,'" + STDWFS.GLBDATA.COPYFROM_SOL_ID +"',1,-1)) CNT FROM BJS WHERE SOL_ID IN ('" + STDWFS.GLBDATA.COPYFROM_SOL_ID +"','" + STDWFS.GLBDATA.NEW_SOL_ID  + "') AND DEL_FLG='N'"
+			print(sv_s)
+			sv_a = urhk_dbSelect (sv_s)
+			IF (BANCS.OUTPARAM.CNT > 0) THEN
+				sv_a = "Some Batch jobs are not replicated.Please check !!"
+				print(sv_a)
+				sv_a = urhk_TBAF_DispMesg (sv_a)
+				GOTO  Finish
+			ENDIF
+		ENDIF
+	ENDIF
+	##END BJSTM
+	##START C_SCT
+	sv_s = "CNT|SELECT SUM(DECODE(SOL_ID,'" + STDWFS.GLBDATA.COPYFROM_SOL_ID +"',1,-1)) CNT FROM C_SCT WHERE SOL_ID IN ('" + STDWFS.GLBDATA.COPYFROM_SOL_ID +"','" + STDWFS.GLBDATA.NEW_SOL_ID  + "') "
+	print(sv_s)
+	sv_a = urhk_dbSelect (sv_s)
+	IF (BANCS.OUTPARAM.CNT > 0) THEN
+		sv_s = "INSERT INTO C_SCT "
+		sv_s = sv_s + "SELECT '" + STDWFS.GLBDATA.NEW_SOL_ID  + "' SOL_ID, CHECK_CODE,CHECK_FLG,REMARKS  FROM C_SCT WHERE SOL_ID='" + STDWFS.GLBDATA.COPYFROM_SOL_ID +"'"
+		sv_a = urhk_dbSQL (sv_s)
+		IF(sv_a != 0) THEN
+			sv_a = "Cannot insert into C_SCT"
+			print(sv_a)
+			sv_a = urhk_TBAF_DispMesg (sv_a)
+			GOTO  Finish
+		ENDIF
+		sv_a = urhk_dbSQL ("COMMIT")
+	ENDIF
+	##END C_SCT
+	##START OF ILCM
+	sv_s = "INSERT INTO ILI "
+	sv_s = sv_s + "SELECT '" + STDWFS.GLBDATA.NEW_SOL_ID  + "', INVT_LOCN_CLASS, INVT_LOCN_CODE, DEL_FLG, INVT_LOCN_DESC, '" + BANCS.STDIN.userId + "' LCHG_USER_ID, SYSDATE LCHG_TIME, '" + BANCS.STDIN.userId + "' RCRE_USER_ID,SYSDATE RCRE_TIME, 0 TS_CNT "
+	sv_s = sv_s + "FROM ILI I WHERE SOL_ID='" + STDWFS.GLBDATA.COPYFROM_SOL_ID +"' AND DEL_FLG='N' "
+	sv_s = sv_s + "AND NOT EXISTS (SELECT 1 FROM ILI L WHERE L.SOL_ID='" + STDWFS.GLBDATA.NEW_SOL_ID  + "' AND I.INVT_LOCN_CLASS=L.INVT_LOCN_CLASS AND I.INVT_LOCN_CODE=L.INVT_LOCN_CODE) "
+	print(sv_s)
+	sv_a = urhk_dbSQL (sv_s)
+	IF(sv_a != 0) THEN
+		sv_a = "Cannot insert into ILI"
+		print(sv_a)
+		sv_a = urhk_TBAF_DispMesg (sv_a)
+		GOTO  Finish
+	ENDIF
+	sv_a = urhk_dbSQL ("COMMIT")
+	##END OF ILCM
+	sv_a = urhk_TBAF_DispMesg ("SOL " + STDWFS.GLBDATA.NEW_SOL_ID + " COPIED FROM " + STDWFS.GLBDATA.COPYFROM_SOL_ID)
+ENDIF
+Finish:
+STDWFS.WFSINPUT.NextStep = "0"
+STDWFS.WFSINPUT.WfsStatus = "D"
+DELETECLASS("STDWFS", "WFSINPARAMVAL")
+DELETECLASS("STDWFS", "WFSINPARAMLEN")
+DELETECLASS("STDWFS", "WFSOUTPARAM")
+DELETECLASS("STDWFS", "GLBDATA")
+TRACE OFF
+end-->

@@ -1,0 +1,233 @@
+#**************************************************************************************************
+RECORDLAYOUT
+#********************************************************************************************
+flg		stringtype  
+schm_desc   stringtype
+acct_crncy_code   stringtype
+foracid   stringtype
+acct_name   stringtype
+acct_opn_date   stringtype
+amt   numbertype
+rate numbertype
+PRKcrncy stringtype
+prkfcybal numbertype
+date1 stringtype
+#********************************************************************************************
+#********************************************************************************************
+LOCALVARIABLES
+#********************************************************************************************
+cnt  numbertype
+cnt1  stringtype
+cnt2  stringtype
+amt_abs numbertype
+n1 numbertype
+n2 numbertype
+n3 numbertype
+s1 stringtype
+s2 stringtype
+s3 stringtype
+s4 stringtype
+s5 stringtype
+#********************************************************************************************
+GROUPANDSORT 
+#********************************************************************************************
+#********************************************************************************************
+REPOSITORY bankRepos.rip
+#********************************************************************************************
+bankname        stringtype
+branchname      stringtype
+#********************************************************************************************
+#********************************************************************************************
+#REPOSITORY argv4
+#********************************************************************************************
+#setId          stringtype
+#asondate       stringtype
+#********************************************************************************************
+#********************************************************************************************
+PAGEFORMAT
+#********************************************************************************************
+linesperPage     64
+columnsperline   95
+topMargin        1 
+bottomMargin     1 
+leftMargin       0
+pageheaderlines  1 
+pagefooterlines  1 
+#********************************************************************************************
+#********************************************************************************************
+ONSTARTOFREPORT
+#********************************************************************************************
+set cnt = 0
+
+#********************************************************************************************
+ONEVERYRECORD
+#********************************************************************************************
+	nextline
+	nextline
+	nextline
+	nextline
+	nextline
+	print "Issue Date : " column 48 
+	print substr today 1 10
+	nextline
+	nextline
+	nextline
+        print "B A L A N C E - C E R T I F I C A T E" column 21 
+	nextline
+		print "-------------------------------------"column 21 
+		nextline
+		nextline
+		print "TO WHOM IT MAY CONCERN" column 25 
+		nextline
+		nextline
+		nextline
+		print "This is to certify the Account Holder as per details mentioned below:" column 6
+		nextline
+		nextline
+		print "Name : " column 17
+		print acct_name 
+		nextline
+		
+		print "A/C No : " column 15 
+		print foracid 
+		nextline
+		if flg = "Y" 
+		begin
+		print "A/C Open Date : " column 8 
+		print acct_opn_date
+		nextline
+		end
+		
+		print "SCHM TYPE : " column 12 
+		print schm_desc
+		nextline
+		
+		print "Currency : " column 13
+		print acct_crncy_code    
+		nextline
+		nextline
+		print "has a balance of " column 6 
+		print acct_crncy_code  
+		print " "
+		print amt precision 2 autocomma  size 18
+#print amt size 18 precision 2 rightjustify 
+		nextline
+		print "In Words : " column 6 
+		print acct_crncy_code  
+		print " "
+
+#	FOR LAA, ODA ACCOUNT THE BALANCE IN WORDS SHOULD BE IN ABSOLUTE
+	set amt_abs = abs amt
+    set s1 = crncyNumToWords amt_abs ""
+    set s2 = splitstring s1 1 30
+    set n1 = strlen s2
+    set n1 = n1 
+    set s3 = splitstring s1 n1 30 
+    set n2 = strlen s3
+    set n2 = n1 + n2
+    set s4 = splitstring s1 n2 45
+    set n3 = strlen s4
+    set n3 = n1 + n2 + n3 
+    set s5 = splitstring s1 n3 45
+        print s2 
+        print s3
+        nextline
+        print s4 column 6 
+	print s5 
+	print " Only."
+
+
+#set cnt1 = crncynumtowords amt decimal
+#print cnt1
+		nextline
+#		set cnt = amt / rate
+		nextline
+if acct_crncy_code= "NPR" and  PRKcrncy != "NPR"
+BEGIN		
+		print "equivalent to " column 6 
+		print PRKcrncy
+		print " "
+		print prkfcybal precision  2 autocomma size 15 
+#print prkfcybal size 18 precision 2 rightjustify column 25
+		print " @ exchange rate " column 45 
+		print rate precision 2  column 64
+		nextline
+		print "In Words : " column 6 
+		print PRKcrncy
+		print " "
+
+#set cnt2 = crncyNumToWords cnt decimal 
+#print cnt2
+
+#	FOR LAA, ODA ACCOUNT THE BALANCE IN WORDS SHOULD BE IN ABSOLUTE
+	set amt_abs = abs prkfcybal 
+    set s1 = crncyNumToWords amt_abs ""
+	set s2 = splitstring s1 1 30
+    set n1 = strlen s2
+    set n1 = n1 
+	set s3 = splitstring s1 n1 30
+    set n2 = strlen s3
+    set n2 = n1 + n2 
+	set s4 = splitstring s1 n2 45
+    set n3 = strlen s4
+    set n3 = n1 + n2 + n3 
+	set s5 = splitstring s1 n3 45
+        print s2
+        print s3
+        nextline
+        print s4 column 6 
+        print s5
+	print " Only."
+
+		nextline
+		nextline
+END
+		nextline
+
+                nextline
+                nextline
+	
+		print "This certificate has been issued as per the request of the afore stated " column 6
+		nextline
+		print "account holder without any obligation on the part of the bank as of " column 6
+		nextline
+		print date1 column 6
+		
+		
+#**********************************************************************************************
+ONENDOFREPORT
+#**********************************************************************************************
+
+nextline
+nextline
+nextline
+nextline
+nextline
+nextline
+nextline
+nextline
+nextline
+nextline
+nextline
+print "____________________                                 ____________________" column 6
+#print "____________________" column 6
+#print "____________________" column 55
+nextline
+print "Authorised Signature                                 Authorised Signature" column 6
+#print "Authorised Signature" column 6
+#print "Authorised Signature" column 55
+nextline
+print "For NEPAL INVESTMENT BANK LTD." column 6
+nextline
+nextline
+print "Note: In case of any query on this Balance Certificate,please contact our" column 6 
+nextline
+print "Compliance Department - compliance@nibl.com.np" column 6
+#print "For NEPAL INVESTMENT BANK LTD." column 55
+#nextline
+#print branchname      column 6
+#print branchname      column 55
+#**********************************************************************************************
+
+
+
